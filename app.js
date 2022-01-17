@@ -5,6 +5,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const base64 = require('base-64');
 const { Sequelize, DataTypes } = require('sequelize');
+const PORT = process.env.PORT || 3000;
+const DATABASE_URL = process.env.DATABASE_URL || 'sqlite:memory';
 
 // Prepare the express app
 const app = express();
@@ -12,13 +14,24 @@ const app = express();
 // Process JSON input and put the data on req.body
 app.use(express.json());
 
-const sequelize = new Sequelize(process.env.DATABASE_URL);
+// const sequelize = new Sequelize(DATABASE_URL);
+
+const db = new Sequelize(DATABASE_URL, {
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+});
+
 
 // Process FORM intput and put the data on req.body
 app.use(express.urlencoded({ extended: true }));
 
 // Create a Sequelize model
-const Users = sequelize.define('User', {
+// const Users = sequelize.define('User', {
+const Users = db.define('User', {
   username: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -77,16 +90,17 @@ app.post('/signin', async (req, res) => {
       res.status(200).json(user);
     }
     else {
-      throw new Error('Invalid User')
+      throw new Error('Invalid User');
     }
-  } catch (error) { res.status(403).send("Invalid Login"); }
+  } catch (error) { res.status(403).send('Invalid Login'); }
 
 });
 
 // make sure our tables are created, start up the HTTP server.
-sequelize.sync()
+// sequelize.sync()
+db.sync()
   .then(() => {
-    app.listen(3000, () => console.log('server up'));
+    app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
   }).catch(e => {
     console.error('Could not start server', e.message);
   });
