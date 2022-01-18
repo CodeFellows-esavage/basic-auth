@@ -53,11 +53,11 @@ Verifies the following:
 - 404 on a bad method
 
 The correct status codes and returned data for each REST route:
-- Create a record using POST
-- Read a list of records using GET
-- Read a record using GET
-- Update a record using PUT
-- Destroy a record using DELETE
+- POST to /signup to create a new user
+- POST to /signin to login as a user (use basic auth)
+- Tests for auth middleware and the routes
+  - Does the middleware function (send it a basic header)
+  - Do the routes assert the requirements (signup/signin)
 
 ## Resources
 - sequelize docs
@@ -66,4 +66,4 @@ The correct status codes and returned data for each REST route:
 - http cats
 - Code Fellows
 - Daniel Jackson
-- Andrew Enyeart
+- Kellen Linse
